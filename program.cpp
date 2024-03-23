@@ -1,184 +1,142 @@
-// #include<iostream>
-// #include<string>
-// #include<ctime>
-// #include<cstdlib>
-// #include<vector>
-
-
-// int randomNum(){
-//     srand(time(0));
-//     int random=(rand()+1)%7;
-//     return random;
-// }
-
-// int AIrandomNum(){
-//     srand(time(0));
-//     int random=(rand()+1)%11;
-//     return random;
-// }
-
-
-
-
-
-
-// using namespace std;
-
-// int main(){
-
-// bool gameOver=false;
-// int numb;
-// const int row=10;
-// const int column=10;
-// char userPress;
-// bool playerTurn=true;
-// int whichRow;
-
-
-
-
-
-
-// char gameBoard[row][column];
-
-// for(int i=0;i<row;i++){
-//     for(int j=0;j<column;j++){
-//         if(j==0){
-//              gameBoard[i][j]='$';
-//         }
-//         else if(j==column-1){
-//              gameBoard[i][j]='&';
-//         }
-//         else{
-//         gameBoard[i][j]='_';
-//         }
-//     }
-// }
-
-
-
-
-
-
-
-
-
-// do{
-   
-
-// cout<<"Press p to roll"<<endl;
-// cin>>userPress;
-
-// if(playerTurn){
-// if(userPress=='p'){
-//     int ranNum=randomNum();
-//     cout<<"Select row"<<endl;
-//     cin>>whichRow;
-
-//     gameBoard[whichRow][ranNum]='$';
-
-
-// for(int i=0;i<row;i++){
-//     for(int j=0;j<column;j++){
-//        if(i==whichRow && j==ranNum){
-//         gameBoard[whichRow][ranNum]='$';
-//        }
-//     }
-//     cout<<endl;
-// }
-
-// for(int i=0;i<row;i++){
-//     for(int j=0;j<column;j++){
-//        cout<<gameBoard[i][j]<<" ";
-//     }
-//     cout<<endl;
-// }
-
-
-// playerTurn=false;
-// }
-// }
-
-
-
-
-// if(!playerTurn){
-
-
-
-// for(int i=row-1;i<0;i--){
-//     for(int j=column-1;j<0;j--){
-//        if(i==randomNum() && j==AIrandomNum()){
-//         gameBoard[randomNum()][AIrandomNum()]='&';
-//        }
-//     }
-// }
-
-// for(int i=0;i<row;i++){
-//     for(int j=0;j<column;j++){
-//        cout<<gameBoard[i][j]<<" ";
-//     }
-//     cout<<endl;
-// }
-
-// playerTurn=true;
-
-
-// }
-
-//  system("CLS");
-// }while(!gameOver);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     return 0;
-// }
-
-
-#include<iostream>
-#include<string>
-#include<ctime>
-
-using namespace std;
-
-int randomNum(){
-    srand(time(0));
-    int random=(rand()+1)%7;
-    return random;
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+// Function to clear the screen
+void clearScreen() {
+    #ifdef _WIN32
+        std::system("cls"); // For Windows
+    #else
+        std::system("clear"); // For Unix-like systems
+    #endif
 }
 
-int main(){
+class Pawn {
+private:
+    int position;
+public:
+    Pawn() : position(0) {}
+    int getPosition() const { return position; }
+    void setPosition(int newPos) { position = newPos; }
+};
 
+class Board {
+private:
+    std::vector<std::vector<char>> board;
+public:
+    Board() {
+        board.resize(10, std::vector<char>(10, '-')); // Initialize the board with empty spaces
+        // Place player 1 pawns ('$') in the first column
+        for (int i = 0; i < 10; ++i)
+            board[i][0] = '$';
+        // Place player 2 pawns ('&') in the last column
+        for (int i = 0; i < 10; ++i)
+            board[i][9] = '&';
+    }
+    void display() const {
+        for (const auto& row : board) {
+            for (char cell : row) {
+                std::cout << cell << ' ';
+            }
+            std::cout << '\n';
+        }
+    }
 
-   char track[20];
+    // Method to access elements by row and column
+    char& at(int row, int col) {
+        return board[row][col];
+    }
 
-   for(int i=0;i<20;i++){
-    track[i]='-';
-   }
+    // Method to get the size of the board
+    int size() const {
+        return board.size();
+    }
+};
 
-   for(int i=0;i<20;i++){
-    cout<<track[i]<<" ";
-   }
+class Player {
+public:
+    int rollDice() {
+        return rand() % 6 + 1; // Generate a random number between 1 and 6
+    }
+    int chooseRow() {
+        int row;
+        std::cout << "Enter row number: ";
+        std::cin >> row;
+        return row;
+    }
+};
 
+class AI {
+public:
+    int chooseRow() {
+        return rand() % 10; // AI chooses a row randomly
+    }
+};
 
+class Game {
+private:
+    Board board;
+    Player player1;
+    AI player2;
+    bool gameOver;
 
+    bool checkWinCondition() {
+        // Check if player 1's pawns have reached the last column
+        for (int i = 0; i < board.size(); ++i) {
+            if (board.at(i, 0) == '$') {
+                return true;
+            }
+        }
+        // Check if player 2's pawns have reached the first column
+        for (int i = 0; i < board.size(); ++i) {
+            if (board.at(i, 9) == '&') {
+                return true;
+            }
+        }
+        return false;
+    }
 
+public:
+    Game() : gameOver(false) {}
 
+    void start() {
+        while (!gameOver) {
+            clearScreen();
+            board.display();
 
+            // Player 1's turn
+            int diceRoll = player1.rollDice();
+            int chosenRow = player1.chooseRow();
+            // Move player 1's pawns
+            // ...
 
+            clearScreen();
+            board.display();
 
+            // Check if player 1 wins
+            if (checkWinCondition()) {
+                std::cout << "Player 1 wins!\n";
+                break;
+            }
 
+            // AI's turn
+            int aiChosenRow = player2.chooseRow();
+            // Move AI's pawns
+            // ...
 
+            // Check if AI wins
+            if (checkWinCondition()) {
+                std::cout << "AI wins!\n";
+                break;
+            }
+        }
+    }
+};
+
+int main() {
+    srand(time(nullptr)); // Seed the random number generator
+    Game game;
+    game.start();
     return 0;
 }
