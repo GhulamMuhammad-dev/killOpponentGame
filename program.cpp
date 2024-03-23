@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <conio.h> // For _getch()
 
 // Function to clear the screen
 void clearScreen() {
@@ -56,9 +57,6 @@ public:
 
 class Player {
 public:
-    int rollDice() {
-        return rand() % 6 + 1; // Generate a random number between 1 and 6
-    }
     int chooseRow() {
         int row;
         std::cout << "Enter row number: ";
@@ -81,16 +79,20 @@ private:
     AI player2;
     bool gameOver;
 
+    int rollDice() {
+        return rand() % 6 + 1; // Generate a random number between 1 and 6
+    }
+
     bool checkWinCondition() {
         // Check if player 1's pawns have reached the last column
         for (int i = 0; i < board.size(); ++i) {
-            if (board.at(i, 0) == '$') {
+            if (board.at(i, 9) == '$') {
                 return true;
             }
         }
         // Check if player 2's pawns have reached the first column
         for (int i = 0; i < board.size(); ++i) {
-            if (board.at(i, 9) == '&') {
+            if (board.at(i, 0) == '&') {
                 return true;
             }
         }
@@ -100,16 +102,42 @@ private:
 public:
     Game() : gameOver(false) {}
 
+    void movePawn(int player, int row, int steps) {
+        // Move the pawn of the specified player by the specified number of steps
+        if (player == 1) {
+            // Player 1 moves to the right (increasing column)
+            for (int i = 0; i < steps; ++i) {
+                if (board.at(row, i) == '$') {
+                    board.at(row, i) = '-';
+                    board.at(row, i + 1) = '$';
+                }
+            }
+        } else {
+            // Player 2 moves to the left (decreasing column)
+            for (int i = 9; i > 9 - steps; --i) {
+                if (board.at(row, i) == '&') {
+                    board.at(row, i) = '-';
+                    board.at(row, i - 1) = '&';
+                }
+            }
+        }
+    }
+
     void start() {
         while (!gameOver) {
             clearScreen();
             board.display();
 
             // Player 1's turn
-            int diceRoll = player1.rollDice();
+            std::cout << "Player 1, press 'p' to roll the dice: ";
+            char key;
+            do {
+                key = _getch(); // Get a character without echoing it
+            } while (key != 'p'); // Wait for 'p' to be pressed
+            int diceRoll = rollDice();
+            std::cout << "Player 1 rolled: " << diceRoll << std::endl;
             int chosenRow = player1.chooseRow();
-            // Move player 1's pawns
-            // ...
+            movePawn(1, chosenRow, diceRoll);
 
             clearScreen();
             board.display();
@@ -122,8 +150,12 @@ public:
 
             // AI's turn
             int aiChosenRow = player2.chooseRow();
-            // Move AI's pawns
-            // ...
+            int aiDiceRoll = rollDice();
+            std::cout << "AI rolled: " << aiDiceRoll << std::endl;
+            movePawn(2, aiChosenRow, aiDiceRoll);
+
+            clearScreen();
+            board.display();
 
             // Check if AI wins
             if (checkWinCondition()) {
