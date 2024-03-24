@@ -54,8 +54,8 @@ class Player {
 public:
     int chooseRow() {
         int row;
-        std::cout << "Enter row number: ";
-        std::cin >> row;
+        cout << "Enter row number: ";
+       cin >> row;
         return row;
     }
 };
